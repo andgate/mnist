@@ -1,5 +1,7 @@
 import { Component } from "solid-js";
 import { CanvasDraw } from "./CanvasDraw";
+import { RecognizerContainer } from "./RecognizerContainer";
+import { GlobalStateProvider } from "./GlobalProvider";
 
 import styles from './styles.css'
 
@@ -7,7 +9,9 @@ export const App: Component = props =>
   <div style={styles}>
     <h1>Hello World</h1>
     <div id='app-container'>
-      <CanvasDraw />
-      <h2>Recognizer (unimplemented)</h2>
+      <GlobalStateProvider>
+        <CanvasDraw />
+        <RecognizerContainer />
+      </GlobalStateProvider>
     </div>
   </div>

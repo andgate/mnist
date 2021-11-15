@@ -1,5 +1,4 @@
 const path = require('path');
-const CopyPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = () => {
@@ -7,7 +6,7 @@ module.exports = () => {
     target: ['web'],
     entry: path.resolve(__dirname, 'src', 'index.tsx'),
     output: {
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname),
       filename: 'index.js',
       library: {
         type: 'umd'
@@ -15,13 +14,16 @@ module.exports = () => {
     },
     devServer: {
       static: {
-        directory: path.join(__dirname, './dist'),
+        directory: path.join(__dirname),
       },
       compress: true,
       port: 9000
     },
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.css']
+    },
+    externals: {
+      'onnxruntime-web': 'ort'
     },
     module: {
       rules: [
@@ -49,13 +51,10 @@ module.exports = () => {
       ]
     },
     plugins: [
-      new CopyPlugin({
-        // Use copy plugin to copy *.wasm to output folder.
-        patterns: [{ from: 'node_modules/onnxruntime-web/dist/*.wasm', to: '[name][ext]' }]
-      }),
       new HtmlWebpackPlugin({
-        title: 'Handwriting Recognizer',
-        filename: path.resolve(__dirname, 'dist', 'index.html') //relative to root of the application
+        template: path.resolve(__dirname, 'src', 'index.html'),
+        inject: 'head',
+        filename: path.resolve(__dirname, 'index.html')
       })
     ]
   }

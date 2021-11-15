@@ -5,7 +5,7 @@
   "description": "Handwritten character recognizer webapp",
   "scripts": {
     "start": "webpack serve --mode=development",
-    "build": "webpack build --mode=development",
+    "build": "webpack build --mode=production",
     "serve": "webpack serve --mode=production",
     "check": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -26,7 +26,6 @@
     "@babel/runtime": "^7.16.3",
     "babel-loader": "^8.2.3",
     "babel-preset-solid": "^1.2.3",
-    "copy-webpack-plugin": "^9.1.0",
     "css-loader": "^6.5.1",
     "html-webpack-plugin": "^5.5.0",
     "style-loader": "^3.3.1",

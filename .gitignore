@@ -1,0 +1,6 @@
+__pycache__
+node_modules
+dist
+data
+minst-file.pth
+.pnpm-debug.log

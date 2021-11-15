@@ -15,10 +15,13 @@ module.exports = () => {
     },
     devServer: {
       static: {
-        directory: path.join(__dirname, '../build'),
+        directory: path.join(__dirname, './dist'),
       },
       compress: true,
       port: 9000
+    },
+    resolve: {
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.css']
     },
     module: {
       rules: [

@@ -1,11 +1,8 @@
-import { Component } from "solid-js";
+import { App } from "./App";
 import { render } from "solid-js/web";
 
-const HelloMessage: Component<{ name: string }> = props =>
-  <div>Hello {props.name}</div>
-
-const root = document.createElement('div')
+const root: HTMLDivElement = document.createElement('div')
 root.id = 'root'
 document.body.appendChild(root)
 
-render(() => <HelloMessage name='World' />, root)
+render(() => <App />, root)

@@ -1,0 +1,15 @@
+body {
+  background-color: white;
+}
+
+#app-container {
+  display: flex;
+  width: 100%;
+  background-color: white;
+  border: 1px solid black;
+}
+/* 
+#drawing-canvas {
+  width: 300px;
+  height: 300px;
+} */

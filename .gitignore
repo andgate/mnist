@@ -2,5 +2,5 @@ __pycache__
 node_modules
 dist
 data
-minst-final.pth
+.pth
 .pnpm-debug.log

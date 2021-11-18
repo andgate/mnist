@@ -17,10 +17,10 @@ export const RecognizerContainer: Component = () => {
   const [session] = createResource(netFetcher)
 
   const [global] = useGlobal()
-  const imageData = createMemo<ImageData | null>(() => global?.data)
+  const imageData = createMemo<ImageData>(() => global.data)
 
   return <div>
     <h2>{session.loading && 'Starting recognizer session...'}</h2>
-    <h2>{!session.loading && imageData() && <Recognizer session={session() as InferenceSession} imageData={imageData() as ImageData} />}</h2>
+    <h2>{!session.loading && <Recognizer session={session() as InferenceSession} imageData={imageData()} />}</h2>
   </div>
 }

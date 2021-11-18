@@ -1,6 +1,6 @@
 import { Component, onMount, useContext } from 'solid-js';
 import { createStore } from "solid-js/store";
-import { GlobalStateContext } from './GlobalProvider';
+import { ImageDataContext, useImageData } from './ImageDataProvider';
 
 function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent) {
   const rect = canvas.getBoundingClientRect(),
@@ -16,7 +16,7 @@ export const CanvasDraw: Component = props => {
   let canvasRef: HTMLCanvasElement;
   let scaledCanvasRef: HTMLCanvasElement;
 
-  const [global, hooks] = useContext(GlobalStateContext)
+  const [_imageData, { setImageData }] = useImageData()
 
   let ctx: CanvasRenderingContext2D | null;
   const [localStore, setLocalStore] = createStore({ isDrawing: false })
@@ -56,7 +56,7 @@ export const CanvasDraw: Component = props => {
       scaledContext.clearRect(0, 0, scaledCanvasRef.width, scaledCanvasRef.height);
       scaledContext.scale(0.5, 0.5);
       scaledContext.drawImage(canvasRef, 0, 0);
-      hooks.setData(ctx.getImageData(0, 0, 28, 28))
+      setImageData(ctx.getImageData(0, 0, 28, 28))
     }
 
     setLocalStore('isDrawing', false)

@@ -20,7 +20,7 @@ module.exports = () => {
       port: 9000
     },
     resolve: {
-      extensions: ['.js', '.jsx', '.ts', '.tsx', '.css']
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.css', '.onnx']
     },
     externals: {
       'onnxruntime-web': 'ort'
@@ -47,6 +47,11 @@ module.exports = () => {
           test: /\.css$/,
           exclude: /node_modules/,
           use: ['style-loader', 'css-loader']
+        },
+        {
+          test: /\.onnx$/,
+          loader: 'arraybuffer-loader',
+          exclude: /node_modules/
         },
       ]
     },

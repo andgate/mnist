@@ -1,17 +1,24 @@
 import { Component } from "solid-js";
 import { CanvasDraw } from "./CanvasDraw";
-import { RecognizerContainer } from "./RecognizerContainer";
-import { GlobalStateProvider } from "./GlobalProvider";
+import { MNIST } from "./MNIST";
+import { ImageDataProvider } from "./ImageDataProvider";
+import { InferenceSessionProvider } from "./InferenceSessionProvider";
 
 import styles from './styles.css'
+import mnistModelBuffer from './mnist.onnx'
 
 export const App: Component = props =>
   <div style={styles}>
     <h1>Hello World</h1>
     <div id='app-container'>
-      <GlobalStateProvider>
+      <ImageDataProvider>
         <CanvasDraw />
-        <RecognizerContainer />
-      </GlobalStateProvider>
+        <InferenceSessionProvider
+          modelBuffer={mnistModelBuffer}
+          dims={[1, 1, 28, 28]}
+        >
+          <MNIST />
+        </InferenceSessionProvider>
+      </ImageDataProvider>
     </div>
   </div>

@@ -10,9 +10,9 @@ specifiers:
   '@babel/preset-typescript': ^7.16.0
   '@babel/runtime': ^7.16.3
   '@vanilla-extract/css': ^1.6.3
+  arraybuffer-loader: ^1.0.8
   babel-loader: ^8.2.3
   babel-preset-solid: ^1.2.3
-  copy-webpack-plugin: ^9.1.0
   css-loader: ^6.5.1
   html-webpack-plugin: ^5.5.0
   onnxruntime-web: ^1.9.0
@@ -37,9 +37,9 @@ devDependencies:
   '@babel/preset-env': 7.16.0_@babel+core@7.16.0
   '@babel/preset-typescript': 7.16.0_@babel+core@7.16.0
   '@babel/runtime': 7.16.3
+  arraybuffer-loader: 1.0.8
   babel-loader: 8.2.3_be81cc65d07bf09c94d0221c44c664ac
   babel-preset-solid: 1.2.3_@babel+core@7.16.0
-  copy-webpack-plugin: 9.1.0_webpack@5.64.0
   css-loader: 6.5.1_webpack@5.64.0
   html-webpack-plugin: 5.5.0_webpack@5.64.0
   style-loader: 3.3.1_webpack@5.64.0
@@ -1606,6 +1606,13 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
+  /arraybuffer-loader/1.0.8:
+    resolution: {integrity: sha512-CwUVCcxCgcgZUu2w741OV6Xj1tvRVQebq22RCyGXiLgJOJ4e4M/59EPYdtK2MLfIN28t1TDvuh2ojstNq3Kh5g==}
+    engines: {node: '>= 4.0.0'}
+    dependencies:
+      loader-utils: 1.4.0
+    dev: true
+
   /async/2.6.3:
     resolution: {integrity: sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg==}
     dependencies:
@@ -1953,21 +1960,6 @@ packages:
   /cookie/0.4.0:
     resolution: {integrity: sha512-+Hp8fLp57wnUSt0tY0tHEXh4voZRDnoIrZPqlo3DPiI4y9lwg/jqx+1Om94/W6ZaPDOUbnjOt/99w66zk+l1Xg==}
     engines: {node: '>= 0.6'}
-    dev: true
-
-  /copy-webpack-plugin/9.1.0_webpack@5.64.0:
-    resolution: {integrity: sha512-rxnR7PaGigJzhqETHGmAcxKnLZSR5u1Y3/bcIv/1FnqXedcL/E2ewK7ZCNrArJKCiSv8yVXhTqetJh8inDvfsA==}
-    engines: {node: '>= 12.13.0'}
-    peerDependencies:
-      webpack: ^5.1.0
-    dependencies:
-      fast-glob: 3.2.7
-      glob-parent: 6.0.2
-      globby: 11.0.4
-      normalize-path: 3.0.0
-      schema-utils: 3.1.1
-      serialize-javascript: 6.0.0
-      webpack: 5.64.0_webpack-cli@4.9.1
     dev: true
 
   /core-js-compat/3.19.1:
@@ -2471,13 +2463,6 @@ packages:
   /glob-parent/5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
-    dependencies:
-      is-glob: 4.0.3
-    dev: true
-
-  /glob-parent/6.0.2:
-    resolution: {integrity: sha512-XxwI8EOhVQgWp6iDL+3b0r86f4d6AX6zSU55HfB4ydCEuXLXc5FcYeOu+nnGftS4TEju/11rt4KJPTMgbfmv4A==}
-    engines: {node: '>=10.13.0'}
     dependencies:
       is-glob: 4.0.3
     dev: true

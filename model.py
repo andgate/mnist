@@ -5,6 +5,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from net import Net
 
+
 def evaluate(net, loader, device):
     net.eval()
     num_correct, num_total = 0, 0
@@ -27,41 +28,40 @@ def evaluate(net, loader, device):
 def train(args):
     # prepare the MNIST dataset
     train_dataset = datasets.MNIST(root="./data/",
-                                   train=True, 
+                                   train=True,
                                    transform=transforms.ToTensor(),
                                    download=True)
 
     test_dataset = datasets.MNIST(root="./data/",
-                                  train=False, 
+                                  train=False,
                                   transform=transforms.ToTensor())
 
     # create the data loader
     train_loader = DataLoader(dataset=train_dataset,
-                              batch_size=args.batch_size, 
+                              batch_size=args.batch_size,
                               shuffle=True, drop_last=True)
 
     test_loader = DataLoader(dataset=test_dataset,
-                             batch_size=args.batch_size, 
+                             batch_size=args.batch_size,
                              shuffle=False)
 
-    
     # turn on the CUDA if available
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
+
     net = Net().to(device)
     loss_op = nn.CrossEntropyLoss()
-    optim   = torch.optim.Adam(net.parameters(), lr=args.lr)
+    optim = torch.optim.Adam(net.parameters(), lr=args.lr)
 
     for epoch in range(args.max_epochs):
         net.train()
         for step, inputs in enumerate(train_loader):
             images = inputs[0].to(device)
             labels = inputs[1].to(device)
-            
+
             # forward-propagation
             outputs = net(images)
             loss = loss_op(outputs, labels)
-            
+
             # back-propagation
             optim.zero_grad()
             loss.backward()
@@ -76,15 +76,18 @@ def train(args):
 
     # Export the model
     torch.onnx.export(net,                   # model being run
-                  dummy_input,                         # model input (or a tuple for multiple inputs)
-                  "net.onnx",        # where to save the model (can be a file or file-like object)
-                  export_params=True,        # store the trained parameter weights inside the model file
-                  opset_version=10,          # the ONNX version to export the model to
-                  do_constant_folding=True,  # whether to execute constant folding for optimization
-                  input_names = ['input'],   # the model's input names
-                  output_names = ['output'], # the model's output names
-                  dynamic_axes={'input' : {0 : 'batch_size'},    # variable length axes
-                                'output' : {0 : 'batch_size'}})
+                      # model input (or a tuple for multiple inputs)
+                      dummy_input,
+                      # where to save the model (can be a file or file-like object)
+                      "src/mnist.onnx",
+                      export_params=True,        # store the trained parameter weights inside the model file
+                      opset_version=10,          # the ONNX version to export the model to
+                      do_constant_folding=True,  # whether to execute constant folding for optimization
+                      input_names=['input'],   # the model's input names
+                      output_names=['output'],  # the model's output names
+                      dynamic_axes={'input': {0: 'batch_size'},    # variable length axes
+                                    'output': {0: 'batch_size'}})
+
 
 def main():
     import argparse
@@ -96,6 +99,7 @@ def main():
     args = parser.parse_args()
 
     train(args)
+
 
 if __name__ == "__main__":
     main()

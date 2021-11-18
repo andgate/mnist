@@ -5,7 +5,6 @@ import { GlobalStateContext } from './GlobalProvider'
 import { Recognizer } from './Recognizer'
 
 export const RecognizerContainer: Component = () => {
-  const [global] = useContext(GlobalStateContext)
   const netFetcher = async (): Promise<InferenceSession> => {
     try {
       const session: InferenceSession = await ort.InferenceSession.create('./net.onnx')

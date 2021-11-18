@@ -32,5 +32,5 @@ export const GlobalStateProvider: Component = (props) => {
   )
 }
 
-export const useGlobal: [Store<GlobalState>, GlobalCommands] =
+export const useGlobal = (): [Store<GlobalState>, GlobalCommands] =>
   useContext(GlobalStateContext)

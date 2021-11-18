@@ -1,7 +1,7 @@
 const ort = require('onnxruntime-web')
 import { InferenceSession } from "onnxruntime-web";
-import { Component, createResource, Show, useContext, Suspense } from 'solid-js'
-import { GlobalStateContext } from './GlobalProvider'
+import { Component, createResource, Show, useContext, Suspense, createMemo } from 'solid-js'
+import { useGlobal } from './GlobalProvider'
 import { Recognizer } from './Recognizer'
 
 export const RecognizerContainer: Component = () => {
@@ -16,8 +16,11 @@ export const RecognizerContainer: Component = () => {
   }
   const [session] = createResource(netFetcher)
 
+  const [global] = useGlobal()
+  const imageData = createMemo<ImageData | null>(() => global?.data)
+
   return <div>
     <h2>{session.loading && 'Starting recognizer session...'}</h2>
-    <h2>{!session.loading && <Recognizer session={session() as InferenceSession} />}</h2>
+    <h2>{!session.loading && imageData() && <Recognizer session={session() as InferenceSession} imageData={imageData() as ImageData} />}</h2>
   </div>
 }

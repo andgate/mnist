@@ -13,9 +13,11 @@ function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent) {
 }
 
 export const CanvasDraw: Component = props => {
+  let canvasRef: HTMLCanvasElement;
+  let scaledCanvasRef: HTMLCanvasElement;
+
   const [global, hooks] = useContext(GlobalStateContext)
 
-  let canvasRef: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D | null;
   const [localStore, setLocalStore] = createStore({ isDrawing: false })
 
@@ -29,7 +31,7 @@ export const CanvasDraw: Component = props => {
       ctx.scale(2, 2)
       ctx.lineCap = 'round'
       ctx.strokeStyle = 'black'
-      ctx.lineWidth = 2
+      ctx.lineWidth = 12
     }
   })
 
@@ -50,8 +52,13 @@ export const CanvasDraw: Component = props => {
     }
     if (ctx) {
       ctx.closePath()
-      hooks.setData(ctx.getImageData(0, 0, 300, 300))
+      const scaledContext = scaledCanvasRef.getContext('2d') as CanvasRenderingContext2D
+      scaledContext.clearRect(0, 0, scaledCanvasRef.width, scaledCanvasRef.height);
+      scaledContext.scale(0.5, 0.5);
+      scaledContext.drawImage(canvasRef, 0, 0);
+      hooks.setData(ctx.getImageData(0, 0, 28, 28))
     }
+
     setLocalStore('isDrawing', false)
   }
 
@@ -72,6 +79,12 @@ export const CanvasDraw: Component = props => {
   }
 
   return <div>
+    <canvas
+      ref={scaledCanvasRef}
+      width="28"
+      height="28"
+      style="display: none"
+    />
     <canvas
       ref={canvasRef}
       onMouseDown={startDrawing}

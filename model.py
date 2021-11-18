@@ -72,8 +72,7 @@ def train(args):
               .format(epoch+1, args.max_epochs, loss.item(), acc))
 
     # torch.save(net.state_dict(), "mnist-final.pth")
-
-    dummy_input = torch.randn(1, 1, 300, 300)
+    dummy_input = torch.randn(1, 1, 28, 28)
 
     # Export the model
     torch.onnx.export(net,                   # model being run

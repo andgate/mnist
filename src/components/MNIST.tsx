@@ -1,8 +1,20 @@
-import { InferenceSession, Tensor } from "onnxruntime-web";
+import { InferenceSession, Tensor } from "onnxruntime-web"
 import { Component, createEffect, createMemo, createResource, For } from 'solid-js'
-import { useImageDataStore } from "../contexts/ImageDataStoreContext";
-import { useInferenceSessionStore } from "../contexts/InferenceSessionStoreContext";
-import { runInferenceSession } from "../utils/Inference";
+import { useImageDataStore } from "../contexts/ImageDataStoreContext"
+import { useInferenceSessionStore } from "../contexts/InferenceSessionStoreContext"
+import { runInferenceSession } from "../utils/Inference"
+import { BarPlot } from "./BarPlot"
+
+const softmax = (xs: number[]): number[] => {
+  if (xs.length == 0) {
+    return xs
+  }
+  const C = Math.max(...xs)
+  const d = xs.map((x) => Math.exp(x - C)).reduce((a, b) => a + b)
+  return xs.map(value => {
+    return Math.exp(value - C) / d;
+  })
+}
 
 const createImageTensor = (imgData: ImageData): Tensor => {
   const raw: Uint8ClampedArray = imgData.data
@@ -59,13 +71,18 @@ export const MNIST: Component = () => {
 
   createEffect(() => console.log(result()))
 
+  const output = createMemo(() => softmax(Array.from(result())))
+
+  const boxPlotMargin = { top: 10, right: 10, bottom: 30, left: 20 },
+    boxPlotWidth = 370,
+    boxPlotHeight = 300;
+
   return <div>
-    <ul>
-      <For each={result()} fallback={<div>Loading...</div>}>
-        {(item, i) =>
-          <li>{'' + i() + ': ' + item + '%'}</li>
-        }
-      </For>
-    </ul>
+    <BarPlot
+      data={output()}
+      margin={boxPlotMargin}
+      width={boxPlotWidth}
+      height={boxPlotHeight}
+    />
   </div>
 }

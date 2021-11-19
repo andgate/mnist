@@ -104,6 +104,7 @@ export const CanvasDraw: Component = () => {
       style='display: none'
     />
     <canvas
+      id='drawing-canvas'
       ref={canvasRef}
       onMouseDown={startDrawing}
       onMouseUp={finishDrawing}

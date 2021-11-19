@@ -20,7 +20,7 @@ module.exports = () => {
       port: 9000
     },
     resolve: {
-      extensions: ['.js', '.jsx', '.ts', '.tsx', '.css', '.onnx']
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.css', '.onnx', '.png', '.jpg', '.jpeg', '.gif', '.svg']
     },
     externals: {
       'onnxruntime-web': 'ort'
@@ -52,6 +52,10 @@ module.exports = () => {
           test: /\.onnx$/,
           loader: 'arraybuffer-loader',
           exclude: /node_modules/
+        },
+        {
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
+          type: 'asset/resource'
         },
       ]
     },

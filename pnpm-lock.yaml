@@ -19,6 +19,7 @@ specifiers:
   solid-js: ^1.2.3
   style-loader: ^3.3.1
   typescript: ^4.4.4
+  url-loader: ^4.1.1
   webpack: ^5.64.0
   webpack-cli: ^4.9.1
   webpack-dev-server: ^4.5.0
@@ -44,6 +45,7 @@ devDependencies:
   html-webpack-plugin: 5.5.0_webpack@5.64.0
   style-loader: 3.3.1_webpack@5.64.0
   typescript: 4.4.4
+  url-loader: 4.1.1_webpack@5.64.0
   webpack: 5.64.0_webpack-cli@4.9.1
   webpack-cli: 4.9.1_372fac462f92eb5de4f7e5d44899566e
   webpack-dev-server: 4.5.0_webpack-cli@4.9.1+webpack@5.64.0
@@ -2926,6 +2928,15 @@ packages:
       json5: 1.0.1
     dev: true
 
+  /loader-utils/2.0.2:
+    resolution: {integrity: sha512-TM57VeHptv569d/GKh6TAYdzKblwDNiumOdkFnejjD0XwTH87K90w3O7AiJRqdQoXygvi1VQTJTLGhJl7WqA7A==}
+    engines: {node: '>=8.9.0'}
+    dependencies:
+      big.js: 5.2.2
+      emojis-list: 3.0.0
+      json5: 2.2.0
+    dev: true
+
   /locate-path/5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
     engines: {node: '>=8'}
@@ -4012,6 +4023,22 @@ packages:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
     dependencies:
       punycode: 2.1.1
+    dev: true
+
+  /url-loader/4.1.1_webpack@5.64.0:
+    resolution: {integrity: sha512-3BTV812+AVHHOJQO8O5MkWgZ5aosP7GnROJwvzLS9hWDj00lZ6Z0wNak423Lp9PBZN05N+Jk/N5Si8jRAlGyWA==}
+    engines: {node: '>= 10.13.0'}
+    peerDependencies:
+      file-loader: '*'
+      webpack: ^4.0.0 || ^5.0.0
+    peerDependenciesMeta:
+      file-loader:
+        optional: true
+    dependencies:
+      loader-utils: 2.0.2
+      mime-types: 2.1.34
+      schema-utils: 3.1.1
+      webpack: 5.64.0_webpack-cli@4.9.1
     dev: true
 
   /url/0.11.0:

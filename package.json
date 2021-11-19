@@ -11,7 +11,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@vanilla-extract/css": "^1.6.3",
     "onnxruntime-web": "^1.9.0",
     "solid-js": "^1.2.3"
   },

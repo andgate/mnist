@@ -1,6 +1,6 @@
 import { Component, onMount, useContext } from 'solid-js';
 import { createStore } from "solid-js/store";
-import { ImageDataContext, useImageData } from './ImageDataProvider';
+import { useImageData } from './ImageDataProvider';
 
 function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent) {
   const rect = canvas.getBoundingClientRect(),
@@ -12,7 +12,7 @@ function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent) {
   }
 }
 
-export const CanvasDraw: Component = props => {
+export const CanvasDraw: Component = () => {
   let canvasRef: HTMLCanvasElement;
   let scaledCanvasRef: HTMLCanvasElement;
 
@@ -46,17 +46,24 @@ export const CanvasDraw: Component = props => {
     setLocalStore('isDrawing', true)
   }
 
+  const updateScaledCanvas = (ctx: CanvasRenderingContext2D) => {
+    const scaledContext = scaledCanvasRef.getContext('2d')
+    const scaleX = scaledCanvasRef.width / canvasRef.width
+    const scaleY = scaledCanvasRef.height / canvasRef.height
+    scaledContext?.clearRect(0, 0, scaledCanvasRef.width, scaledCanvasRef.height)
+    scaledContext?.scale(scaleX, scaleY)
+    scaledContext?.drawImage(canvasRef, 0, 0)
+    scaledContext?.scale(1.0 / scaleX, 1.0 / scaleY)
+    setImageData(ctx.getImageData(0, 0, scaledCanvasRef.width, scaledCanvasRef.height))
+  }
+
   const finishDrawing = () => {
     if (!localStore.isDrawing) {
       return
     }
     if (ctx) {
       ctx.closePath()
-      const scaledContext = scaledCanvasRef.getContext('2d') as CanvasRenderingContext2D
-      scaledContext.clearRect(0, 0, scaledCanvasRef.width, scaledCanvasRef.height);
-      scaledContext.scale(0.5, 0.5);
-      scaledContext.drawImage(canvasRef, 0, 0);
-      setImageData(ctx.getImageData(0, 0, 28, 28))
+      updateScaledCanvas(ctx)
     }
 
     setLocalStore('isDrawing', false)
@@ -75,7 +82,7 @@ export const CanvasDraw: Component = props => {
 
   const clear = () => {
     finishDrawing()
-    ctx?.clearRect(0, 0, canvasRef.width, canvasRef.height);
+    ctx?.clearRect(0, 0, canvasRef.width, canvasRef.height)
   }
 
   return <div>
@@ -83,7 +90,7 @@ export const CanvasDraw: Component = props => {
       ref={scaledCanvasRef}
       width="28"
       height="28"
-      style="display: none"
+      style='display: none'
     />
     <canvas
       ref={canvasRef}

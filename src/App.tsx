@@ -14,12 +14,14 @@ const homeUrl = 'https://andgate.github.io/'
 export const App: Component = props =>
   <div style={styles}>
     <div id="page-header">
-      <div id="dev-container" onClick={() => location.href = homeUrl} >
-        <img src={logoImage} id="dev-logo" />
-        <h2 id="dev-name">
-          andgate
-        </h2>
-      </div>
+      <a href={homeUrl} title='Return to main site'>
+        <div id="dev-container">
+          <img src={logoImage} id="dev-logo" />
+          <h2 id="dev-name">
+            andgate
+          </h2>
+        </div>
+      </a>
       <div id="page-title-container">
         <h1 id="page-title">MNIST Handwritten Digit Recognizer</h1>
       </div>

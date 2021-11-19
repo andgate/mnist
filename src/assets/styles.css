@@ -76,4 +76,5 @@ a:active #dev-container {
   width: 300px;
   height: 300px;
   border: 1px solid black;
+  cursor: crosshair;
 }

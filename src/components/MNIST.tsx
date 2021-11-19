@@ -1,4 +1,3 @@
-const ort = require('onnxruntime-web')
 import { InferenceSession, Tensor } from "onnxruntime-web";
 import { Component, createEffect, createMemo, createResource, For } from 'solid-js'
 import { useImageDataStore } from "../contexts/ImageDataStoreContext";
@@ -14,7 +13,7 @@ const createImageTensor = (imgData: ImageData): Tensor => {
 
   console.log({ rawImageData: raw, greyscaleImageData: data })
 
-  return new ort.Tensor('float32', data, [1, 1, 28, 28])
+  return new Tensor('float32', data, [1, 1, 28, 28])
 }
 
 const emptyOutput: Float32Array = new Float32Array(10)

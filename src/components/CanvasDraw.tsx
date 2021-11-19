@@ -33,7 +33,7 @@ export const CanvasDraw: Component = () => {
       ctx.scale(2, 2)
       ctx.lineCap = 'round'
       ctx.strokeStyle = 'black'
-      ctx.lineWidth = 12
+      ctx.lineWidth = 24
     }
   })
 

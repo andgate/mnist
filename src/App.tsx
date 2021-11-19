@@ -9,7 +9,7 @@ import styles from './assets/styles.css'
 import mnistModelBuffer from './assets/mnist.onnx'
 import logoImage from './assets/andgate.png'
 
-const homeUrl = 'https://andgate.github.com/'
+const homeUrl = 'https://andgate.github.io/'
 
 export const App: Component = props =>
   <div style={styles}>

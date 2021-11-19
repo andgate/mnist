@@ -1,6 +1,6 @@
-import { Component, onMount, useContext } from 'solid-js';
+import { Component, onMount } from 'solid-js';
 import { createStore } from "solid-js/store";
-import { useImageData } from './ImageDataProvider';
+import { useImageDataStore } from '../contexts/ImageDataStoreContext';
 
 function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent) {
   const rect = canvas.getBoundingClientRect(),
@@ -16,9 +16,10 @@ export const CanvasDraw: Component = () => {
   let canvasRef: HTMLCanvasElement;
   let scaledCanvasRef: HTMLCanvasElement;
 
-  const [_imageData, { setImageData }] = useImageData()
+  const [_imageData, imageDataStoreHooks] = useImageDataStore()
 
   let ctx: CanvasRenderingContext2D | null;
+  let scaledCtx: CanvasRenderingContext2D | null;
   const [localStore, setLocalStore] = createStore({ isDrawing: false })
 
   onMount(() => {
@@ -27,6 +28,7 @@ export const CanvasDraw: Component = () => {
     canvasRef.style.width = '300px'
     canvasRef.style.height = '300px'
     ctx = canvasRef.getContext('2d')
+    scaledCtx = scaledCanvasRef.getContext('2d')
     if (ctx) {
       ctx.scale(2, 2)
       ctx.lineCap = 'round'
@@ -36,53 +38,62 @@ export const CanvasDraw: Component = () => {
   })
 
   const startDrawing = (ev: MouseEvent) => {
+    if (!ctx) {
+      return
+    }
     const p = getCursorPosition(canvasRef, ev)
 
-    if (ctx) {
-      ctx.beginPath()
-      ctx.moveTo(p.x, p.y)
-    }
+    ctx.beginPath()
+    ctx.moveTo(p.x, p.y)
 
     setLocalStore('isDrawing', true)
   }
 
-  const updateScaledCanvas = (ctx: CanvasRenderingContext2D) => {
-    const scaledContext = scaledCanvasRef.getContext('2d')
+  const updateImageDateStore = () => {
+    if (!scaledCtx) {
+      return
+    }
+    imageDataStoreHooks.setImageData(scaledCtx.getImageData(0, 0, scaledCanvasRef.width, scaledCanvasRef.height))
+  }
+
+  const updateScaledCanvas = () => {
+    if (!ctx || !scaledCtx) {
+      return
+    }
     const scaleX = scaledCanvasRef.width / canvasRef.width
     const scaleY = scaledCanvasRef.height / canvasRef.height
-    scaledContext?.clearRect(0, 0, scaledCanvasRef.width, scaledCanvasRef.height)
-    scaledContext?.scale(scaleX, scaleY)
-    scaledContext?.drawImage(canvasRef, 0, 0)
-    scaledContext?.scale(1.0 / scaleX, 1.0 / scaleY)
-    setImageData(ctx.getImageData(0, 0, scaledCanvasRef.width, scaledCanvasRef.height))
+    scaledCtx.clearRect(0, 0, scaledCanvasRef.width, scaledCanvasRef.height)
+    scaledCtx.scale(scaleX, scaleY)
+    scaledCtx.drawImage(canvasRef, 0, 0)
+    scaledCtx.scale(1.0 / scaleX, 1.0 / scaleY)
+    updateImageDateStore()
   }
 
   const finishDrawing = () => {
-    if (!localStore.isDrawing) {
+    if (!localStore.isDrawing || !ctx) {
       return
     }
-    if (ctx) {
-      ctx.closePath()
-      updateScaledCanvas(ctx)
-    }
-
+    ctx.closePath()
+    updateScaledCanvas()
     setLocalStore('isDrawing', false)
   }
 
   const draw = (ev: MouseEvent) => {
-    if (!localStore.isDrawing) {
+    if (!localStore.isDrawing || !ctx) {
       return
     }
     const p = getCursorPosition(canvasRef, ev)
-    if (ctx) {
-      ctx.lineTo(p.x, p.y)
-      ctx.stroke()
-    }
+    ctx.lineTo(p.x, p.y)
+    ctx.stroke()
   }
 
   const clear = () => {
-    finishDrawing()
-    ctx?.clearRect(0, 0, canvasRef.width, canvasRef.height)
+    if (!ctx || !scaledCtx) {
+      return
+    }
+    ctx.clearRect(0, 0, canvasRef.width, canvasRef.height)
+    scaledCtx.clearRect(0, 0, scaledCanvasRef.width, scaledCanvasRef.height)
+    updateImageDateStore()
   }
 
   return <div>
@@ -97,6 +108,7 @@ export const CanvasDraw: Component = () => {
       onMouseDown={startDrawing}
       onMouseUp={finishDrawing}
       onMouseMove={draw}
+      onMouseLeave={finishDrawing}
     />
     <button onClick={clear}>Clear</button>
   </div>

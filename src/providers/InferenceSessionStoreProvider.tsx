@@ -1,17 +1,11 @@
-import { InferenceSession } from "onnxruntime-web";
-import { Component, Context, createContext, createEffect, createMemo, createResource, useContext } from "solid-js";
-import { createStore, Store } from "solid-js/store";
-import { createCpuInferenceSession, warmupInferenceSession } from "./utils/Inference";
+import { InferenceSession } from "onnxruntime-web"
+import { Component, createEffect, createMemo, createResource } from "solid-js"
+import { createStore } from "solid-js/store"
+import { InferenceSessionStoreContext } from "../contexts/InferenceSessionStoreContext"
+import { emptyInferenceSessionStore, InferenceSessionStore } from "../stores/InferenceSessionStore"
+import { createCpuInferenceSession, warmupInferenceSession } from "../utils/Inference"
 
-type InferenceSessionStore = {
-  session: InferenceSession | null
-}
-
-const emptyInferenceSessionStore: InferenceSessionStore = {
-  session: null
-}
-
-type InferenceSessionProviderProps = {
+export type InferenceSessionStoreProviderProps = {
   modelBuffer: Uint8Array,
   dims: number[]
 }
@@ -32,10 +26,7 @@ const createSession = async (config: InferenceSessionConfig): Promise<InferenceS
   }
 }
 
-export const InferenceSessionContext: Context<InferenceSessionStore> =
-  createContext<InferenceSessionStore>(emptyInferenceSessionStore)
-
-export const InferenceSessionProvider: Component<InferenceSessionProviderProps> = (props) => {
+export const InferenceSessionStoreProvider: Component<InferenceSessionStoreProviderProps> = (props) => {
   const inferenceSessionConfig = createMemo<InferenceSessionConfig>(() => ({
     modelBuffer: props.modelBuffer,
     dims: props.dims
@@ -51,11 +42,8 @@ export const InferenceSessionProvider: Component<InferenceSessionProviderProps> 
   })
 
   return (
-    <InferenceSessionContext.Provider value={state}>
+    <InferenceSessionStoreContext.Provider value={state}>
       {props.children}
-    </InferenceSessionContext.Provider>
+    </InferenceSessionStoreContext.Provider>
   )
 }
-
-export const useInferenceSession = (): Store<InferenceSessionStore> =>
-  useContext(InferenceSessionContext)

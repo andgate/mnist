@@ -75,18 +75,23 @@ def train(args):
     dummy_input = torch.randn(1, 1, 28, 28)
 
     # Export the model
-    torch.onnx.export(net,                   # model being run
-                      # model input (or a tuple for multiple inputs)
-                      dummy_input,
-                      # where to save the model (can be a file or file-like object)
-                      "src/mnist.onnx",
-                      export_params=True,        # store the trained parameter weights inside the model file
-                      opset_version=10,          # the ONNX version to export the model to
-                      do_constant_folding=True,  # whether to execute constant folding for optimization
-                      input_names=['input'],   # the model's input names
-                      output_names=['output'],  # the model's output names
-                      dynamic_axes={'input': {0: 'batch_size'},    # variable length axes
-                                    'output': {0: 'batch_size'}})
+    torch.onnx.export(
+        net,                        # model being run
+        # model input (or a tuple for multiple inputs)
+        dummy_input,
+        # where to save the model (can be a file or file-like object)
+        "src/assets/mnist.onnx",
+        export_params=True,        # store the trained parameter weights inside the model file
+        opset_version=10,          # the ONNX version to export the model to
+        do_constant_folding=True,  # whether to execute constant folding for optimization
+        input_names=['input'],     # the model's input names
+        output_names=['output'],    # the model's output names
+        dynamic_axes={
+            # variable length axes
+            'input': {0: 'batch_size'},
+            'output': {0: 'batch_size'}
+        }
+    )
 
 
 def main():

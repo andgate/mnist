@@ -6,7 +6,7 @@ module.exports = () => {
     target: ['web'],
     entry: path.resolve(__dirname, 'src', 'index.tsx'),
     output: {
-      path: path.resolve(__dirname),
+      path: path.resolve(__dirname, 'docs'),
       filename: 'index.js',
       library: {
         type: 'umd'
@@ -63,7 +63,7 @@ module.exports = () => {
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'src', 'assets', 'index.html'),
         inject: 'head',
-        filename: path.resolve(__dirname, 'index.html')
+        filename: path.resolve(__dirname, 'docs', 'index.html')
       })
     ]
   }

@@ -51,7 +51,7 @@ const renderBarPlot = (data: number[], containerRef: HTMLDivElement, margin: Mar
     .data(data)
     .enter()
     .append("rect")
-    .attr("x", function (_d, i) {
+    .attr("x", (_d, i) => {
       const px = x('' + i)
       if (!px) { return px }
       return px + margin.left
@@ -63,7 +63,7 @@ const renderBarPlot = (data: number[], containerRef: HTMLDivElement, margin: Mar
 }
 
 export const BarPlot: Component<BarPlotProps> = props => {
-  let containerRef: HTMLDivElement
+  let containerRef!: HTMLDivElement
   createEffect(() => renderBarPlot(props.data, containerRef, props.margin, props.width, props.height))
   return <div ref={containerRef} />
 }

@@ -1,51 +1,48 @@
 import { InferenceSession, Tensor } from "onnxruntime-web"
-import { Component, createEffect, createMemo, createResource, For } from 'solid-js'
+import { Component, createEffect, createMemo, createResource } from 'solid-js'
 import { useImageDataStore } from "../contexts/ImageDataStoreContext"
 import { useInferenceSessionStore } from "../contexts/InferenceSessionStoreContext"
 import { runInferenceSession } from "../utils/Inference"
 import { BarPlot } from "./BarPlot"
+import { Image } from 'image-js'
 
-const softmax = (xs: number[]): number[] => {
-  if (xs.length == 0) {
-    return xs
-  }
-  const C = Math.max(...xs)
-  const d = xs.map((x) => Math.exp(x - C)).reduce((a, b) => a + b)
-  return xs.map(value => {
-    return Math.exp(value - C) / d;
-  })
+
+const createImageTensor = (normalizedImage: Image): Tensor | undefined => {
+  // The known mean and std of mnist, which our model is scaled by.
+  const mean = 0.1307
+  const std = 0.3081
+  const normalizedImageData = Float32Array.from(normalizedImage.data, x => ((x / 255) - mean) / std)
+  console.log('createImageTensor', normalizedImageData)
+  const imgTensor = new Tensor('float32', normalizedImageData, [1, 1, 28, 28])
+  
+  return imgTensor
 }
-
-const createImageTensor = (imgData: ImageData): Tensor => {
-  const raw: Uint8ClampedArray = imgData.data
-  var data = new Float32Array(raw.length / 4)
-  for (let i = 0, j = 3, len = data.length; i < len; i++, j += 4) {
-    data[i] = raw[j] / 255
-  }
-
-  console.log({ rawImageData: raw, greyscaleImageData: data })
-
-  return new Tensor('float32', data, [1, 1, 28, 28])
-}
-
-const emptyOutput: Float32Array = new Float32Array(10)
 
 type MinstSession = {
   session: InferenceSession | null;
-  inputTensor: Tensor
+  inputTensor?: Tensor
 }
 
-const runMnist = async (minst: MinstSession): Promise<Float32Array> => {
+interface MinstPrediction {
+  probabilities: number[]
+  inferenceTime: number
+}
+
+const runMnist = async (minst: MinstSession): Promise<MinstPrediction | null> => {
   if (!minst.session) {
     console.warn('runMnist called with null session.')
-    return emptyOutput
+    return null
+  }
+
+  if (!minst.inputTensor) {
+    return null
   }
 
   try {
-    const [output, inferenceTime] = await runInferenceSession(minst.session, minst.inputTensor)
-    console.info(`MNIST inference time was ${inferenceTime}`)
+    const [logProbabilities, inferenceTime] = await runInferenceSession(minst.session, minst.inputTensor)
+    const probabilities = Array.from(logProbabilities.data as Float32Array).map(x => Math.exp(x))
 
-    return output.data as Float32Array
+    return { probabilities, inferenceTime }
   } catch (err) {
     console.error(err)
     throw err
@@ -58,28 +55,26 @@ export const MNIST: Component = () => {
   const session = createMemo(() => sessionStore.session)
 
   const [imageDataStore] = useImageDataStore()
-  const imageData = createMemo(() => imageDataStore.imageData)
+  const normalizedImage = createMemo(() => imageDataStore.normalizedImage)
 
   const minstSession = createMemo<MinstSession>(() => ({
     session: session(),
-    inputTensor: createImageTensor(imageData())
+    inputTensor: createImageTensor(normalizedImage())
   }))
 
-  createEffect(() => console.log(minstSession()))
+  const [prediction] = createResource<MinstPrediction | null, MinstSession>(minstSession, runMnist, { initialValue: null })
 
-  const [result] = createResource<Float32Array, MinstSession>(minstSession, runMnist, { initialValue: emptyOutput })
-
-  createEffect(() => console.log(result()))
-
-  const output = createMemo(() => softmax(Array.from(result())))
+  const probabilities = createMemo(() => prediction()?.probabilities ?? [])
+  const inferenceTime = createMemo(() => prediction()?.inferenceTime ?? 0)
 
   const boxPlotMargin = { top: 10, right: 10, bottom: 30, left: 20 },
     boxPlotWidth = 370,
     boxPlotHeight = 300;
 
   return <div>
+    prediction time: {inferenceTime()}ms
     <BarPlot
-      data={output()}
+      data={probabilities()}
       margin={boxPlotMargin}
       width={boxPlotWidth}
       height={boxPlotHeight}

@@ -1,4 +1,4 @@
-import { Component, onMount } from 'solid-js';
+import { Component, createEffect, onMount, createMemo } from 'solid-js';
 import { createStore } from "solid-js/store";
 import { useImageDataStore } from '../contexts/ImageDataStoreContext';
 
@@ -13,27 +13,56 @@ function getCursorPosition(canvas: HTMLCanvasElement, event: MouseEvent) {
 }
 
 export const CanvasDraw: Component = () => {
-  let canvasRef: HTMLCanvasElement;
-  let scaledCanvasRef: HTMLCanvasElement;
+  let canvasRef!: HTMLCanvasElement;
+  let scaledCanvasRef!: HTMLCanvasElement;
 
-  const [_imageData, imageDataStoreHooks] = useImageDataStore()
+  const [imageDataStore, imageDataStoreCommands] = useImageDataStore()
 
   let ctx: CanvasRenderingContext2D | null;
   let scaledCtx: CanvasRenderingContext2D | null;
   const [localStore, setLocalStore] = createStore({ isDrawing: false })
 
+  const initializeDrawingCanvas = () => {
+    if (!ctx) {
+      console.warn('Could not get drawing canvas context in onMount')  
+      return
+    }
+
+    ctx.scale(2, 2)
+    ctx.lineCap = 'round'
+    ctx.strokeStyle = 'black'
+    ctx.lineWidth = 24
+    ctx.fillStyle = 'white'
+    ctx.fillRect(0, 0, canvasRef.width, canvasRef.height)
+    imageDataStoreCommands.normalizeImage()
+  }
+
   onMount(() => {
+    imageDataStoreCommands.setDrawingCanvas(canvasRef)
     canvasRef.width = 1024
     canvasRef.height = 1024
     canvasRef.style.width = '300px'
     canvasRef.style.height = '300px'
     ctx = canvasRef.getContext('2d')
     scaledCtx = scaledCanvasRef.getContext('2d')
-    if (ctx) {
-      ctx.scale(2, 2)
-      ctx.lineCap = 'round'
-      ctx.strokeStyle = 'black'
-      ctx.lineWidth = 24
+    initializeDrawingCanvas()
+  })
+
+  
+  const normalizedImage = createMemo(() => imageDataStore.normalizedImage) 
+
+  createEffect(() => {
+    if (!scaledCtx) {
+      return
+    }
+
+    const newNormalizedImage = normalizedImage()
+    const newScaledCanvas = newNormalizedImage.rgba8().getCanvas()
+    const normalizedImageData = newScaledCanvas.getContext('2d')?.getImageData(0, 0, 28, 28)
+
+    scaledCtx?.clearRect(0, 0, scaledCanvasRef.width, scaledCanvasRef.height)
+    if (normalizedImageData) {
+      scaledCtx?.putImageData(normalizedImageData, 0, 0)
     }
   })
 
@@ -49,32 +78,12 @@ export const CanvasDraw: Component = () => {
     setLocalStore('isDrawing', true)
   }
 
-  const updateImageDateStore = () => {
-    if (!scaledCtx) {
-      return
-    }
-    imageDataStoreHooks.setImageData(scaledCtx.getImageData(0, 0, scaledCanvasRef.width, scaledCanvasRef.height))
-  }
-
-  const updateScaledCanvas = () => {
-    if (!ctx || !scaledCtx) {
-      return
-    }
-    const scaleX = scaledCanvasRef.width / canvasRef.width
-    const scaleY = scaledCanvasRef.height / canvasRef.height
-    scaledCtx.clearRect(0, 0, scaledCanvasRef.width, scaledCanvasRef.height)
-    scaledCtx.scale(scaleX, scaleY)
-    scaledCtx.drawImage(canvasRef, 0, 0)
-    scaledCtx.scale(1.0 / scaleX, 1.0 / scaleY)
-    updateImageDateStore()
-  }
-
   const finishDrawing = () => {
     if (!localStore.isDrawing || !ctx) {
       return
     }
     ctx.closePath()
-    updateScaledCanvas()
+    imageDataStoreCommands.normalizeImage()
     setLocalStore('isDrawing', false)
   }
 
@@ -85,15 +94,18 @@ export const CanvasDraw: Component = () => {
     const p = getCursorPosition(canvasRef, ev)
     ctx.lineTo(p.x, p.y)
     ctx.stroke()
+    imageDataStoreCommands.normalizeImage()
   }
 
   const clear = () => {
     if (!ctx || !scaledCtx) {
       return
     }
-    ctx.clearRect(0, 0, canvasRef.width, canvasRef.height)
+    
+    ctx.fillStyle = 'white'
+    ctx.fillRect(0, 0, canvasRef.width, canvasRef.height)
     scaledCtx.clearRect(0, 0, scaledCanvasRef.width, scaledCanvasRef.height)
-    updateImageDateStore()
+    imageDataStoreCommands.normalizeImage()
   }
 
   return <div>
@@ -101,7 +113,7 @@ export const CanvasDraw: Component = () => {
       ref={scaledCanvasRef}
       width="28"
       height="28"
-      style='display: none'
+      // style='display: none'
     />
     <canvas
       id='drawing-canvas'

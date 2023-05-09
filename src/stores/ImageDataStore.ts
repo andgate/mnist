@@ -1,13 +1,15 @@
+import { Image } from 'image-js'
+
 export type ImageDataStore = {
-  imageData: ImageData
+  drawingCanvas?: HTMLCanvasElement
+  normalizedImage: Image
 }
 
 export type ImageDataStoreCommands = {
-  setImageData: (newData: ImageData) => void
+  setDrawingCanvas: (canvas: HTMLCanvasElement) => void
+  normalizeImage: () => void
 }
 
-export const emptyImageData: ImageData =
-  new ImageData(28, 28)
-
-export const emptyImageDataStore: ImageDataStore =
-  { imageData: emptyImageData }
+export const emptyImageDataStore: ImageDataStore = {
+  normalizedImage: new Image(28, 28).grey()
+}

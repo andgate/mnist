@@ -7,3 +7,4 @@ data
 .pnpm-debug.log
 .ipynb_checkpoints/
 .vscode
+lightning_logs/
